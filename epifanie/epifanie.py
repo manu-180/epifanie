@@ -59,7 +59,7 @@ def potencia_tu_empresa():
         ),
         rx.mobile_only(
             rx.vstack(
-                rx.heading("La Agencia de", rx.text("Marketing Digital", color=Color.VIOLETA.value ), "que acelerará el crecimiento de tu empresa.", size="6"),
+                rx.heading("La Agencia de", rx.text("Marketing Digital", color=Color.VIOLETA.value ), "que acelerará el crecimiento de tu empresa.", size="7"),
                 rx.text("Fuimos reconocidos como socios PREMIER Partner de Google y META Marketing Partner.Brindamos soluciones de marketing digital 360° adaptadas 100% a las necesidades de tu negrocio.", size="3", weight="light"),
                 rx.button(
                     rx.text("Potencia tu empresa hoy",size="3"), 
@@ -69,12 +69,12 @@ def potencia_tu_empresa():
                 ),
                 rx.image(
                     src="/agencia-de-marketing-digital.png", 
-                    width = "35em", 
+                    width = "100%", 
                     height="auto", 
                     margin_left="5em"
                 ),
                 margin_top="3em",
-                padding = "4em",
+                padding = "2em",
                 text_align="center", 
                 align="center"
             )
