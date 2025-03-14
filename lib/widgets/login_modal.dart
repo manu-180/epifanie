@@ -1,44 +1,33 @@
 import 'package:epifanie/main.dart';
-import 'package:epifanie/utils/capitalize.dart';
-import 'package:epifanie/utils/generar_id_usuario.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class RegisterModal extends StatefulWidget {
-  const RegisterModal({super.key});
+class LoginModal extends StatefulWidget {
+  const LoginModal({super.key});
 
   @override
-  RegisterModalState createState() => RegisterModalState();
+  LoginModalState createState() => LoginModalState();
 }
 
-class RegisterModalState extends State<RegisterModal> {
-  final TextEditingController fullNameController = TextEditingController();
+class LoginModalState extends State<LoginModal> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
 
   String emailError = "";
   String passwordError = "";
   bool isLoading = false;
 
-  final RegExp emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-
   /// ✅ **Registra usuario en Supabase**
-  Future<void> _registerUser() async {
+  Future<void> _iniciarUser() async {
     setState(() => isLoading = true);
     FocusScope.of(context).unfocus(); // Cierra teclado
 
-    final String fullName = Capitalize().capitalize(fullNameController.text.trim());
     final String email = emailController.text.trim();
     final String password = passwordController.text.trim();
-    final String confirmPassword = confirmPasswordController.text.trim();
 
     setState(() {
-      emailError = emailRegex.hasMatch(email) ? "" : "Email no válido";
       passwordError = password.length < 6
           ? "La contraseña debe tener al menos 6 caracteres"
-          : password != confirmPassword
-              ? "Las contraseñas no coinciden"
               : "";
     });
 
@@ -49,26 +38,12 @@ class RegisterModalState extends State<RegisterModal> {
     }
 
     try {
-      final AuthResponse res = await supabase.auth.signUp(
-        email: email,
-        password: password,
-        data: {
-          'full_name': fullName,
-          'created_at': DateTime.now().toUtc().toIso8601String(),
-        },
-      );
+     await supabase.auth.signInWithPassword(
+  email: email,
+  password: password,
+);
 
-
-        await supabase.from('epifanie_users').insert({
-          'id': await GenerarIdUsuario().generarIdUsuario(),
-          'email': email,
-          'full_name': fullName,
-          "user_uid": res.user!.id,
-        });
-      
-      _showSnackbar("Registro exitoso. Ingrese a su correo para verificarse", Colors.green);
-      Navigator.of(context).pop(); // Cierra modal
-    } on AuthException catch (e) {
+          } on AuthException catch (e) {
       _showSnackbar(e.message, Colors.red);
     } catch (e) {
       _showSnackbar("Error inesperado: $e", Colors.red);
@@ -112,7 +87,7 @@ class RegisterModalState extends State<RegisterModal> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "REGISTRARSE",
+                          "Inicia Sesión",
                           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
                           textAlign: TextAlign.end,
                         ),
@@ -122,16 +97,14 @@ class RegisterModalState extends State<RegisterModal> {
                     const SizedBox(height: 15),
 
                     // 📌 Campos del formulario
-                    _buildTextField("Nombre Completo", fullNameController, primaryColor),
                     _buildTextField("Correo electrónico", emailController, primaryColor, errorText: emailError),
                     _buildTextField("Contraseña", passwordController, primaryColor, isPassword: true, errorText: passwordError),
-                    _buildTextField("Confirmar contraseña", confirmPasswordController, primaryColor, isPassword: true),
 
                     const SizedBox(height: 20),
 
                     // 🔥 Botón de enviar
                     ElevatedButton(
-                      onPressed: _registerUser,
+                      onPressed: _iniciarUser,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: primaryColor,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
@@ -139,7 +112,7 @@ class RegisterModalState extends State<RegisterModal> {
                       ),
                       child: isLoading
                           ? const CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white))
-                          : const Text("REGISTRARSE", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white)),
+                          : const Text("Inicia sesión", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white)),
                     ),
                   ],
                 ),

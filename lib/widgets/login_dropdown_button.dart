@@ -1,3 +1,4 @@
+import 'package:epifanie/widgets/login_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -5,12 +6,19 @@ class LoginDropdownButton extends StatefulWidget {
   const LoginDropdownButton({super.key});
 
   @override
-  _LoginDropdownButtonState createState() => _LoginDropdownButtonState();
+  LoginDropdownButtonState createState() => LoginDropdownButtonState();
 }
 
-class _LoginDropdownButtonState extends State<LoginDropdownButton> {
+class LoginDropdownButtonState extends State<LoginDropdownButton> {
   bool _isDropdownOpen = false;
   OverlayEntry? _overlayEntry;
+
+  void _openRegisterModal() {
+    showDialog(
+      context: context,
+      builder: (context) => const LoginModal(),
+    );
+  }
 
   void _toggleDropdown() {
     if (_isDropdownOpen) {
@@ -19,6 +27,7 @@ class _LoginDropdownButtonState extends State<LoginDropdownButton> {
       _openDropdown();
     }
   }
+  
 
   void _openDropdown() {
     final overlay = Overlay.of(context);
@@ -59,6 +68,7 @@ class _LoginDropdownButtonState extends State<LoginDropdownButton> {
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme.primary;
     final bgColor = _getInterpolatedColor(color, color.withOpacity(0.2));
+    final size = MediaQuery.of(context).size;
 
     return GestureDetector(
       onTap: _toggleDropdown,
@@ -71,20 +81,24 @@ class _LoginDropdownButtonState extends State<LoginDropdownButton> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              "Inicia Sesión",
-              style: TextStyle(
-              color:Colors.white,
-              fontSize: 16  ,
-              fontWeight: FontWeight.w100,
-              fontFamily: 'Poppins'
-            ),
+            SizedBox(
+              width: size.width * 0.08,
+              child: Text(
+                "Inicia Sesión",
+                textAlign: TextAlign.end,
+                style: TextStyle(
+                color:Colors.white,
+                fontSize: 16  ,
+                fontWeight: FontWeight.w100,
+                fontFamily: 'Poppins'
+              ),
+              ),
             ),
             const SizedBox(width: 10),
             AnimatedRotation(
               turns: _isDropdownOpen ? 0.5 : 0.0,
               duration: const Duration(milliseconds: 300),
-              child: FaIcon(FontAwesomeIcons.chevronDown, color: Colors.white, size: 12),
+              child: FaIcon(FontAwesomeIcons.chevronDown, color: Colors.white, size: 14),
             ),
           ],
         ),
@@ -121,7 +135,7 @@ class _LoginDropdownButtonState extends State<LoginDropdownButton> {
       onTap: _closeDropdown,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        child: Text(text, style: const TextStyle(fontSize: 16, color: Colors.black87)),
+        child: TextButton(child: Text(text), onPressed: () => _openRegisterModal(),),
       ),
     );
   }
