@@ -8,14 +8,12 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   // Cargar variables de entorno
-  final String supabaseUrl = const String.fromEnvironment('SUPABASE_URL');
-  final String supabaseAnonKey = const String.fromEnvironment('SUPABASE_ANON_KEY');
-
+  await dotenv.load(fileName: ".env");
 
   // Inicializar Supabase
   await Supabase.initialize(
-    url: supabaseUrl,
-    anonKey: supabaseAnonKey,
+    url: dotenv.env['SUPABASE_URL']!,
+    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
 
   runApp(const MyApp());
