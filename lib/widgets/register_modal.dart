@@ -1,3 +1,6 @@
+import 'package:epifanie/main.dart';
+import 'package:epifanie/utils/capitalize.dart';
+import 'package:epifanie/utils/generar_id_usuario.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -9,8 +12,7 @@ class RegisterModal extends StatefulWidget {
 }
 
 class _RegisterModalState extends State<RegisterModal> {
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController surnameController = TextEditingController();
+  final TextEditingController fullNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
@@ -21,21 +23,12 @@ class _RegisterModalState extends State<RegisterModal> {
 
   final RegExp emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
 
-  /// 🔥 **Formatea el nombre para que cada palabra comience en mayúscula**
-  String capitalize(String text) {
-    return text.split(' ').map((word) {
-      if (word.isEmpty) return "";
-      return word[0].toUpperCase() + word.substring(1).toLowerCase();
-    }).join(' ');
-  }
-
   /// ✅ **Registra usuario en Supabase**
   Future<void> _registerUser() async {
     setState(() => isLoading = true);
     FocusScope.of(context).unfocus(); // Cierra teclado
 
-    final String name = capitalize(nameController.text.trim());
-    final String surname = capitalize(surnameController.text.trim());
+    final String fullName = Capitalize().capitalize(fullNameController.text.trim());
     final String email = emailController.text.trim();
     final String password = passwordController.text.trim();
     final String confirmPassword = confirmPasswordController.text.trim();
@@ -56,22 +49,24 @@ class _RegisterModalState extends State<RegisterModal> {
     }
 
     try {
-      final AuthResponse response = await Supabase.instance.client.auth.signUp(
+      final AuthResponse res = await supabase.auth.signUp(
         email: email,
         password: password,
         data: {
-          'full_name': "$name $surname",
+          'full_name': fullName,
+          'created_at': DateTime.now().toUtc().toIso8601String(),
         },
       );
 
-      await Supabase.instance.client.from('epifanie_users').insert({
-        'id': response.user?.id,
-        'email': email,
-        'full_name': "$name $surname",
-        'created_at': DateTime.now().toIso8601String(),
-      });
 
-      _showSnackbar("Registro exitoso", Colors.green);
+        await supabase.from('epifanie_users').insert({
+          'id': await GenerarIdUsuario().generarIdUsuario(),
+          'email': email,
+          'full_name': fullName,
+          "user_uid": res.user!.id,
+        });
+      
+      _showSnackbar("Registro exitoso. Ingrese a su correo para verificarse", Colors.green);
       Navigator.of(context).pop(); // Cierra modal
     } on AuthException catch (e) {
       _showSnackbar(e.message, Colors.red);
@@ -84,7 +79,8 @@ class _RegisterModalState extends State<RegisterModal> {
 
   void _showSnackbar(String message, Color color) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: color),
+      SnackBar(content: Text(message), backgroundColor: color,
+      duration: const Duration(seconds: 7),),
     );
   }
 
@@ -117,7 +113,8 @@ class _RegisterModalState extends State<RegisterModal> {
                       children: [
                         Text(
                           "REGISTRARSE",
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: primaryColor),
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                          textAlign: TextAlign.end,
                         ),
                         IconButton(icon: const Icon(Icons.close, color: Colors.white), onPressed: () => Navigator.of(context).pop()),
                       ],
@@ -125,8 +122,7 @@ class _RegisterModalState extends State<RegisterModal> {
                     const SizedBox(height: 15),
 
                     // 📌 Campos del formulario
-                    _buildTextField("Nombre", nameController, primaryColor),
-                    _buildTextField("Apellido", surnameController, primaryColor),
+                    _buildTextField("Nombre Completo", fullNameController, primaryColor),
                     _buildTextField("Correo electrónico", emailController, primaryColor, errorText: emailError),
                     _buildTextField("Contraseña", passwordController, primaryColor, isPassword: true, errorText: passwordError),
                     _buildTextField("Confirmar contraseña", confirmPasswordController, primaryColor, isPassword: true),
@@ -154,7 +150,6 @@ class _RegisterModalState extends State<RegisterModal> {
       ),
     );
   }
-
   Widget _buildTextField(String hint, TextEditingController controller, Color primaryColor,
       {bool isPassword = false, String? errorText}) {
     return Padding(

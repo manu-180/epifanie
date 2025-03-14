@@ -7,13 +7,15 @@ class Header extends StatelessWidget {
   Widget build(BuildContext context) {
 
     final color = Theme.of(context).colorScheme.primary;
+    final size = MediaQuery.of(context).size;
+    final isMobile = size.width < 800;
 
     return Stack(
         children: [
           // Fondo con degradado
           Container(
             width: double.infinity,
-            height: 500,
+            height: isMobile ? size.height * 0.75 : size.height * 0.85,
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [Color.fromARGB(255, 222, 230, 252), color],
@@ -29,7 +31,7 @@ class Header extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 80), // Espaciado superior
+                 SizedBox(height: isMobile? size.height * 0.1: size.height * 0.08), // Espaciado superior
 
                 // Texto principal
                 RichText(
@@ -70,14 +72,23 @@ class Header extends StatelessWidget {
                     fontWeight: FontWeight.w600
                     ),
                 ),
-                const SizedBox(height: 20),
+                isMobile? SizedBox(height: size.width * 0.1) : 
+                 SizedBox(height: size.width * 0.025),
 
                 // Botones
+                isMobile?
+                Column(
+                  children: [
+                    _customButton("SOY UNA MARCA", color, context),
+                     SizedBox(height: size.width * 0.034),
+                    _customButton("SOY UN INFLUENCER", color, context),
+                  ],
+                ):
                 Row(
                   children: [
-                    _customButton("SOY UNA MARCA", color),
-                    const SizedBox(width: 15),
-                    _customButton("SOY UN INFLUENCER", color),
+                    _customButton("SOY UNA MARCA", color, context),
+                     SizedBox(width: size.width * 0.015),
+                    _customButton("SOY UN INFLUENCER", color, context),
                   ],
                 ),
               ],
@@ -92,19 +103,28 @@ class Header extends StatelessWidget {
   }
 
   /// **Botón personalizado**
-  Widget _customButton(String text, Color color) {
-    return ElevatedButton(
-      onPressed: () {},
-      style: ElevatedButton.styleFrom(
-        backgroundColor: color,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
+  Widget _customButton(String text, Color color, BuildContext context) {
+
+    final size = MediaQuery.of(context).size;
+
+    final isMobile = size.width < 800;
+
+    return SizedBox(
+      width: isMobile ? size.width * 0.5: size.width * 0.15 ,
+      child: ElevatedButton(
+        onPressed: () {},
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(size.width * 0.08),
+          ),
+          padding:  isMobile ? EdgeInsets.symmetric(horizontal: size.width * 0.035, vertical: size.width * 0.035):
+          EdgeInsets.symmetric(horizontal: 0, vertical: size.width * 0.015),
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      ),
-      child: Text(
-        text,
-        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+        child: Text(
+          text,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+        ),
       ),
     );
   }

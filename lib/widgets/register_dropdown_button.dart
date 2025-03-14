@@ -85,6 +85,7 @@ class RegisterDropdownButtonState extends State<RegisterDropdownButton> {
               width: size.width * 0.08,
               child: Text(
                 "Registrate",
+                textAlign: TextAlign.end,
                 style: TextStyle(
                 color:Colors.white,
                 fontSize: 16  ,
@@ -97,7 +98,7 @@ class RegisterDropdownButtonState extends State<RegisterDropdownButton> {
             AnimatedRotation(
               turns: _isDropdownOpen ? 0.5 : 0.0,
               duration: const Duration(milliseconds: 300),
-              child: FaIcon(FontAwesomeIcons.chevronDown, color: Colors.white, size: 12),
+              child: FaIcon(FontAwesomeIcons.chevronDown, color: Colors.white, size: 14),
             ),
           ],
         ),

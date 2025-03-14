@@ -18,6 +18,8 @@ class CustomAppBarState extends State<CustomAppBar> {
   @override
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme.primary;
+    final size = MediaQuery.of(context).size;
+    final isMobile = size.width < 800;
 
     return Container(
       height: kToolbarHeight,
