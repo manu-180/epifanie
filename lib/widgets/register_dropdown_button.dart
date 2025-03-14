@@ -68,6 +68,7 @@ class RegisterDropdownButtonState extends State<RegisterDropdownButton> {
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme.primary;
     final bgColor = _getInterpolatedColor(color, color.withOpacity(0.2));
+    final size = MediaQuery.of(context).size;
 
     return GestureDetector(
       onTap: _toggleDropdown,
@@ -80,14 +81,17 @@ class RegisterDropdownButtonState extends State<RegisterDropdownButton> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              "Registrate",
-              style: TextStyle(
-              color:Colors.white,
-              fontSize: 16  ,
-              fontWeight: FontWeight.w100,
-              fontFamily: 'Poppins'
-            ),
+            SizedBox(
+              width: size.width * 0.08,
+              child: Text(
+                "Registrate",
+                style: TextStyle(
+                color:Colors.white,
+                fontSize: 16  ,
+                fontWeight: FontWeight.w100,
+                fontFamily: 'Poppins'
+              ),
+              ),
             ),
             const SizedBox(width: 10),
             AnimatedRotation(
